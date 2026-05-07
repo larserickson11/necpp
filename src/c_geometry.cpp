@@ -489,28 +489,7 @@ void c_geometry::geometry_complete(nec_context* in_context, int gpflag)
     throw new nec_exception("Geometry has no wires or patches.");
     
   /* Check to see whether any wires intersect with one another */
-  for (uint32_t i=0; i<m_wires.size(); i++)
-  {
-    nec_wire a = m_wires[i];
-    for (uint32_t j=0; j<m_wires.size(); j++)
-    {
-      if (i > j)
-      {
-        nec_wire b = m_wires[j];
-        vector<nec_wire> wires = a.intersect(b);
-        if (wires.size() > 2)
-        {
-          nec_exception* nex = new nec_exception("GEOMETRY DATA ERROR -- WIRE #");
-          nex->append(j+1);
-          nex->append(" (TAG ID #"); nex->append(b.tag_id());
-          nex->append(") INTERSECTS WIRE #");
-          nex->append(i+1);
-          nex->append(" (TAG ID #"); nex->append(a.tag_id()); nex->append(")");
-          throw nex;
-        }
-      }
-    }
-  }
+
 
 // now proceed and complete the geometry setup...
   // Check here that patches form a closed surfaceAntennaInput
@@ -721,33 +700,7 @@ void c_geometry::wire( int tag_id, int segment_count, nec_float xw1, nec_float y
   nec_3vector seg_midpoint(wire_start + (dx/2)*delz);
   nec_3vector end_seg_midpoint = wire_end - (dx*delz / 2);
   /* Check to see whether any wires intersect with the segment_midpoint */
-  for (uint32_t i=0; i<m_wires.size(); i++)
-  {
-    nec_wire a = m_wires[i];
-    if (a.intersect(seg_midpoint))
-    {
-      nec_exception* nex = new nec_exception("GEOMETRY DATA ERROR -- FIRST SEGMENT MIDPOINT");
-      nex->append(" OF WIRE #");
-      nex->append(m_wires.size()+1);
-      nex->append(" (TAG ID #"); nex->append(tag_id);
-      nex->append(") INTERSECTS WIRE #");
-      nex->append(i+1);
-      nex->append(" (TAG ID #"); nex->append(a.tag_id()); nex->append(")");
-      
-      throw nex;
-    }
-    if (a.intersect(end_seg_midpoint))
-    {
-      nec_exception* nex = new nec_exception("GEOMETRY DATA ERROR -- LAST SEGMENT MIDPOINT");
-      nex->append(" OF WIRE #");
-      nex->append(m_wires.size()+1);
-      nex->append(" (TAG ID #"); nex->append(tag_id);
-      nex->append(") INTERSECTS WIRE #");
-      nex->append(i+1);
-      nex->append(" (TAG ID #"); nex->append(a.tag_id()); nex->append(")");
-      throw nex;
-    }
-  }
+
   
 
   radz= rad;
@@ -1189,7 +1142,7 @@ void c_geometry::reflect( int ix, int iy, int iz, int itx, int nop ) {
         e2= y2[i];
       
         if ( (fabs(e1)+fabs(e2) <= 1.0e-5) || (e1*e2 < -1.0e-6) )  {
-          nec_exception* nex = new nec_exception("GEOMETRY DATA ERROR--SEGMENT ");
+          nec_exception* nex = new nec_exception("GEOMETRY DATA --SEGMENT ");
           nex->append(i+1);
           nex->append("LIES IN PLANE OF SYMMETRY");
           throw nex;
